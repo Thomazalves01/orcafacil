@@ -1,6 +1,6 @@
 /* ==========================================================
    OrçaFácil
-   Componente: Gerador de PDF
+   Componente: Gerador de PDF (Corrigido para Celular)
 ========================================================== */
 
 const PDF = {
@@ -18,23 +18,35 @@ const PDF = {
             return;
         }
 
+        // Guarda os estilos originais da tela do celular/PC
+        const originalStyle = element.getAttribute("style") || "";
+
         try {
-            // Força a cor de fundo e opacidade direto no estilo do elemento para o html2canvas ler
+            // 1. FORÇA LARGURA FIXA DE A4 (794px) PARA O PRINT FICAR PERFEITO NO MOBILE
+            element.style.width = "794px";
+            element.style.minWidth = "794px";
+            element.style.maxWidth = "794px";
+            element.style.boxSizing = "border-box";
             element.style.backgroundColor = "#ffffff";
             element.style.color = "#0f172a";
 
-            // Tira print com alta resolução (scale: 2)
+            // 2. Tira o print com o canvas simulando a largura de desktop
             const canvas = await html2canvas(element, {
                 scale: 2,
                 useCORS: true,
                 backgroundColor: "#ffffff",
-                logging: false
+                logging: false,
+                width: 794,        // Força largura do canvas
+                windowWidth: 1024  // Engana o html2canvas para renderizar em modo desktop
             });
 
-            // Converte a captura em imagem PNG
+            // Restaura o estilo da tela do celular imediatamente após a captura
+            element.setAttribute("style", originalStyle);
+
+            // 3. Converte a captura em imagem PNG
             const imgData = canvas.toDataURL("image/png");
 
-            // Instancia o jsPDF
+            // 4. Instancia o jsPDF
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF({
                 orientation: "portrait",
@@ -45,15 +57,22 @@ const PDF = {
             const imgWidth = 210; // Largura do A4 em mm
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-            // Adiciona a imagem cobrindo toda a folha
+            // 5. Adiciona a imagem no PDF
             pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
 
-            // Salva o PDF com o nome da empresa ou padrão
+            // 6. Salva o arquivo
             pdf.save("Orcamento.pdf");
 
         } catch (error) {
+            // Se der erro, garante que restaura o estilo da tela
+            element.setAttribute("style", originalStyle);
             console.error("Erro ao gerar PDF:", error);
             alert("Ocorreu um erro ao gerar o PDF. Verifique o console.");
         }
     }
 };
+
+// Inicializa o componente quando o DOM carregar
+document.addEventListener("DOMContentLoaded", () => {
+    PDF.init();
+});
