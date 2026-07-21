@@ -1,8 +1,16 @@
 /* ==========================================================
    OrçaFácil
    Arquivo: workspace.css
-   Função: Estilos exclusivos do Workspace
+   Função: Estilos exclusivos do Workspace (Corrigido para Mobile)
 ========================================================== */
+
+/* Prevenção global contra quebras de zoom e barra lateral */
+html, body {
+    overflow-x: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
 
 /* ==========================
    LAYOUT
@@ -48,25 +56,30 @@
 }
 
 /* ==========================
-   PREVIEW
+   PREVIEW (Permite rolar a folha no celular sem deformar)
 ========================== */
 
 .preview {
     display: flex;
     justify-content: center;
     align-items: flex-start;
+    width: 100%;
+    overflow-x: auto; /* Permite visualizar o A4 inteiro via scroll se necessário */
+    padding-bottom: 20px;
 }
 
 /* ==========================
-   FOLHA A4
+   FOLHA A4 (LARGURA FIXA PARA MANTER O PDF PERFEITO)
 ========================== */
 
 .paper {
     width: 210mm;
+    min-width: 210mm; /* Evita que o celular esprema a folha A4 */
     min-height: 297mm;
     box-sizing: border-box;
     background: #ffffff;
     padding: 20mm;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .paper h2 {
@@ -132,7 +145,7 @@
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
-    margin-bottom: 25px; /* Afasta a tabela do elemento de baixo */
+    margin-bottom: 25px;
 }
 
 .quote-items-table th {
@@ -142,26 +155,25 @@
     font-size: 13px;
     font-weight: 600;
     text-transform: uppercase;
-    padding: 12px 16px; /* Espaçamento das colunas do cabeçalho */
+    padding: 12px 16px;
     border-bottom: 2px solid var(--border);
 }
 
 .quote-items-table td {
-    padding: 14px 16px; /* Espaçamento interno das linhas */
+    padding: 14px 16px;
     color: var(--text);
     font-size: 15px;
     border-bottom: 1px solid var(--border);
 }
 
-/* Alinhamento profissional das colunas */
 .quote-items-table th:nth-child(2),
 .quote-items-table td:nth-child(2) {
-    text-align: center; /* Qtd alinhada ao centro */
+    text-align: center;
 }
 
 .quote-items-table th:nth-child(3),
 .quote-items-table td:nth-child(3) {
-    text-align: right; /* Valor alinhado à direita */
+    text-align: right;
 }
 
 /* ==========================================================
@@ -190,7 +202,6 @@
     white-space: pre-line;
 }
 
-/* Linha separadora do total */
 .paper hr.total-divider {
     margin-top: 30px;
     margin-bottom: 20px;
@@ -232,17 +243,20 @@
 }
 
 /* ==========================
-   RESPONSIVIDADE E IMPRESSÃO
+   RESPONSIVIDADE E IMPRESSÃO (CORRIGIDO)
 ========================== */
 
 @media(max-width: 1100px) {
     .workspace {
         grid-template-columns: 1fr;
+        margin: 16px auto;
+        gap: 24px;
     }
 
+    /* MANTÉM A PROPORÇÃO PROPORCIONAL DA FOLHA EM TELAS MENORES */
     .paper {
-        width: 100%;
-        min-height: auto;
+        transform-origin: top center;
+        /* Garante que o visual continue em formato folha A4 proporcional */
     }
 }
 
@@ -252,12 +266,13 @@
     }
 
     .paper {
-        width: 210mm;
-        min-height: 297mm;
-        margin: 0;
-        padding: 20mm;
-        box-shadow: none;
-        border-radius: 0;
+        width: 210mm !important;
+        min-width: 210mm !important;
+        min-height: 297mm !important;
+        margin: 0 !important;
+        padding: 20mm !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
         page-break-after: avoid;
     }
 }
